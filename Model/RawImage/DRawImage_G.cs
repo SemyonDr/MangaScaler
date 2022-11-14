@@ -1,16 +1,11 @@
-﻿using BitMiracle.LibJpeg;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MangaScaler.Model {
-    /// <summary>
-    /// Object for storing data for RGB image in double format.
-    /// </summary>
-    internal class DRawImage_RGB {
-
+    internal class DRawImage_G {
         //------------------------------------------
         //PUBLIC PROPERTIES
         //------------------------------------------
@@ -40,15 +35,16 @@ namespace MangaScaler.Model {
         /// Number of pixel components.
         /// </summary>
         public int NumCmp {
-            get { return 3; }
+            get { return 1; }
             private set { }
         }
+
 
         /// <summary>
         /// Array that contains image pixels
         /// Order is [Row][Column].
         /// </summary>
-        public DPixel_RGB[][] Pixel { get; private set; }
+        public DPixel_G[][] Pixel { get; private set; }
 
 
         //------------------------------------------
@@ -64,9 +60,9 @@ namespace MangaScaler.Model {
         /// </summary>
         /// <param name="Width">Width of the new image.</param>
         /// <param name="Height">Height of the new image.</param>
-        public DRawImage_RGB(int Height, int Width) {
+        public DRawImage_G(int Height, int Width) {
             //Creating pixel rows array
-            Pixel = new DPixel_RGB[Height][];
+            Pixel = new DPixel_G[Height][];
 
             //Initializing rows in parallel
             Task[] create_row_tasks = new Task[Height];
@@ -74,7 +70,7 @@ namespace MangaScaler.Model {
             //Create empty row lambda function
             Action<object> create_row = (param) => {
                 CreateRowParams p = param as CreateRowParams;
-                Pixel[p.row] = new DPixel_RGB[Width];
+                Pixel[p.row] = new DPixel_G[Width];
             };
 
             //Creating tasks
@@ -94,9 +90,9 @@ namespace MangaScaler.Model {
         /// </summary>
         /// <param name="Width">Width of the new image.</param>
         /// <param name="Height">Height of the new image.</param>
-        public DRawImage_RGB(int Height, int Width, DPixel_RGB init_px) {
+        public DRawImage_G(int Height, int Width, double init) {
             //Creating pixel rows array
-            Pixel = new DPixel_RGB[Height][];
+            Pixel = new DPixel_G[Height][];
 
             //Initializing rows in parallel
             Task[] create_row_tasks = new Task[Height];
@@ -104,9 +100,9 @@ namespace MangaScaler.Model {
             //Create row lambda function
             Action<object> create_row = (param) => {
                 CreateRowParams p = param as CreateRowParams;
-                DPixel_RGB[] new_row = new DPixel_RGB[Width];
+                DPixel_G[] new_row = new DPixel_G[Width];
                 for (int px = 0; px < Width; px++)
-                    new_row[px] = new DPixel_RGB(init_px.R, init_px.G, init_px.B);
+                    new_row[px] = new DPixel_G(init);
                 Pixel[p.row] = new_row;
             };
 
@@ -127,7 +123,7 @@ namespace MangaScaler.Model {
         /// </summary>
         /// <param name="data">Image data array.</param>
         /// <param name="Layout">Image pixel components layout.</param>
-        public DRawImage_RGB(DPixel_RGB[][] pixels) {
+        public DRawImage_G(DPixel_G[][] pixels) {
             this.Pixel = pixels;
         }
 
@@ -144,10 +140,8 @@ namespace MangaScaler.Model {
         /// <param name="r">Red component.</param>
         /// <param name="g">Green component.</param>
         /// <param name="b">Blue component.</param>
-        public void SetPixel(int row, int col, double r, double g, double b) {
-            Pixel[row][col].R = r;
-            Pixel[row][col].G = g;
-            Pixel[row][col].B = b;
+        public void SetPixel(int row, int col, double gr) {
+            Pixel[row][col].Gr = gr;
         }
     }
 }

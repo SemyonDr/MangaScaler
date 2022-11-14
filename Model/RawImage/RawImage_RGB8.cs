@@ -57,20 +57,6 @@ namespace MangaScaler.Model {
 
 
         /// <summary>
-        /// Image data layout.
-        /// </summary>
-        public RawImageLayout Layout { get; private set; }
-
-
-        /// <summary>
-        /// Returns true if image has alpha channel.
-        /// </summary>
-        public bool HasAlpha {
-            get { return false; }
-            private set { }
-        }
-
-        /// <summary>
         /// Array that contains image pixels
         /// Order is [Row][Column].
         /// </summary>
@@ -91,8 +77,6 @@ namespace MangaScaler.Model {
         /// <param name="Width">Width of the new image.</param>
         /// <param name="Height">Height of the new image.</param>
         public RawImage_RGB8(int Height, int Width) { 
-            this.Layout = Layout;
-
             //Creating pixel rows array
             Pixel = new Pixel_RGB8[Height][];
 
@@ -123,8 +107,6 @@ namespace MangaScaler.Model {
         /// <param name="Width">Width of the new image.</param>
         /// <param name="Height">Height of the new image.</param>
         public RawImage_RGB8(int Height, int Width, Pixel_RGB8 init_px) {
-            this.Layout = Layout;
-
             //Creating pixel rows array
             Pixel = new Pixel_RGB8[Height][];
 

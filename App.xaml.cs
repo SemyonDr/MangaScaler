@@ -17,8 +17,9 @@ namespace MangaScaler {
             //Model.DotGainTester_RGB8.TestDotGain(".\\Tests\\DotGain\\RGB8\\sample_mng_small.jpg", 50, 50, 0.5);
             //Model.DotGainTester_RGB8.TestBatchStrength(".\\Tests\\DotGain\\RGB8\\sample_mng_small_clr.jpg");
             //Model.DotGainTester_RGB8.TestBatchSpread(".\\Tests\\DotGain\\RGB8\\sample_mng_small.jpg");
-            Model.DownscalerTester_RGB8.TestDownscaler(".\\Tests\\Downscale\\RGB8\\sample_mng_blast.jpg", 0.45, true, 50,50);
-            Model.DownscalerTester_RGB8.TestDownscaler(".\\Tests\\Downscale\\RGB8\\sample_mng_blast.jpg", 0.45, false, 50, 50);
+            Model.DotGainTester_RGB8.TestBatchSpread(".\\Tests\\DotGain\\RGB8\\sample_mng_blast.jpg");
+            //Model.DownscalerTester_RGB8.TestDownscaler(".\\Tests\\Downscale\\RGB8\\sample_mng_blast.jpg", 0.45, true, 50,50);
+            //Model.DownscalerTester_RGB8.TestDownscaler(".\\Tests\\Downscale\\RGB8\\sample_mng_blast.jpg", 0.45, false, 50, 50);
         }
     }
 }

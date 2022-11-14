@@ -83,14 +83,16 @@
     <Compile Include="Model\Downscaler\PixelBin.cs" />
     <Compile Include="Model\GFunc.cs" />
     <Compile Include="Model\LuminanceConverter.cs" />
+    <Compile Include="Model\RawImage\DRawImage_G.cs" />
     <Compile Include="Model\RawImage\Pixel\DPixel.cs" />
+    <Compile Include="Model\RawImage\Pixel\DPixel_G.cs" />
     <Compile Include="Model\RawImage\Pixel\DPixel_RGB.cs" />
     <Compile Include="Model\RawImage\Pixel\Pixel.cs" />
+    <Compile Include="Model\RawImage\Pixel\Pixel_G8.cs" />
     <Compile Include="Model\RawImage\Pixel\Pixel_RGB8.cs" />
     <Compile Include="Model\RawImage\RawImageLayout.cs" />
     <Compile Include="Model\RawImage\RawImage_RGB8.cs" />
     <Compile Include="Model\RawImage\DRawImage_RGB.cs" />
-    <Compile Include="Model\RawImage\RawImage_RGB8_Lum.cs" />
     <Compile Include="Model\Tests\BlurTesters\BlurTester_RGB8.cs" />
     <Compile Include="Model\Tests\DotGainTesters\DotGainTester_RGB8.cs" />
     <Compile Include="Model\Tests\DownscalerTester\DownscalerTester_RGB8.cs" />

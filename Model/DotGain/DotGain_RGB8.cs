@@ -7,6 +7,49 @@ using System.Threading.Tasks;
 namespace MangaScaler.Model {
     internal class DotGain_RGB8 : DotGain {
         /// <summary>
+        /// Parameters for getting brightness weights of one row.
+        /// </summary>
+        private class BWRowParams {
+            public int row;
+        }
+
+        /// <summary>
+        /// Creates weights of brightness for every pixel.
+        /// </summary>
+        /// <param name="source">Source image.</param>
+        /// <returns>Brightness weights container.</returns>
+        /// <remarks>Brightness weight values stored as pixels of double image.</remarks>
+        private static DRawImage_G GetBrightnessWeights(RawImage_RGB8 source, int strength) {
+            double[] brightness_weights_array = CreateBrightnessWeights(strength);
+
+            //Result container
+            DRawImage_G res = new DRawImage_G(source.Height, source.Width);
+
+            //Lambda for parallel task
+            Action<object> get_bw_row = (param) => {
+                BWRowParams p = param as BWRowParams;
+                //Weighting brightness of every pixel in source row
+                for (int col = 0; col < source.Width; col++) {
+                    int src_px_brightness = source.Pixel[p.row][col].Avg;
+                    res.Pixel[p.row][col] = new DPixel_G(brightness_weights_array[src_px_brightness]);
+                }
+            };
+
+            //Starting task for every row
+            Task[] get_bw_row_tasks = new Task[source.Height];
+            for (int row = 0; row < source.Height; row++) {
+                BWRowParams p = new BWRowParams();
+                p.row = row;
+                get_bw_row_tasks[row] = Task.Factory.StartNew(get_bw_row, p);
+            }
+            //Waiting for tasks to complete
+            Task.WaitAll(get_bw_row_tasks);
+
+            return res;
+        }
+
+
+        /// <summary>
         /// Arguments object for ProcessRow method.
         /// </summary>
         private class ProcessRowParams {
@@ -14,7 +57,7 @@ namespace MangaScaler.Model {
             public int src_row; //Number of row to process in the source image
             public RawImage_RGB8 res_img; //Resulting image byte array
             public double[][] dist_matrix; //Array of distance weights
-            public double[] brightness_weights; //Array of brightness weights
+            public DRawImage_G brightness_weights; //Container of brightness weights
         }
 
 
@@ -83,9 +126,9 @@ namespace MangaScaler.Model {
         /// <param name="m_size">Weighted samples matrix size.</param>
         /// <param name="weighted_samples">Matrix for storing the result.</param>
         /// <param name="dist_matrix">Matrix that represents distance weights.</param>
-        /// <param name="brightness_weights">Brightness weights array.</param>
+        /// <param name="brightness_weights">Brightness weights container.</param>
         /// <returns>Combined distance and brightness sum.</returns>
-        private static double WeightSamples(Pixel_RGB8[][] src_data, int src_row, int src_col, int m_size, DPixel_RGB[][] weighted_samples, double[][] dist_matrix, double[] brightness_weights) {
+        private static double WeightSamples(Pixel_RGB8[][] src_data, int src_row, int src_col, int m_size, DPixel_RGB[][] weighted_samples, double[][] dist_matrix, DRawImage_G brightness_weights) {
             //Sum of combined weights for every sample pixel.
             //Will be used for averaging
             double cmb_weights_sum = 0.0;
@@ -125,7 +168,7 @@ namespace MangaScaler.Model {
 
                     if (src_data[src_row][src_col].Avg >= src_data[smp_row][smp_col].Avg)
                         //If sample is darker than target pixel we get sampe brightness weight from table
-                        smp_brightness_weight = brightness_weights[src_data[smp_row][smp_col].Avg];
+                        smp_brightness_weight = brightness_weights.Pixel[smp_row][smp_col].Gr;
                     else
                         //If sample is brighter than target pixel we discard its luminance
                         smp_brightness_weight = 0.0;
@@ -145,7 +188,7 @@ namespace MangaScaler.Model {
             //Restoring target pixel not weighted luminance
             weighted_samples[m_size / 2][m_size / 2] = src_data[src_row][src_col].Scale(dist_matrix[m_size / 2][m_size / 2]);
             //Replacing target combined weight by simply distance weight (it will be equal to 1 because distance matrix is normalized when created)
-            cmb_weights_sum += (1 - brightness_weights[src_data[src_row][src_col].Avg]) * dist_matrix[m_size / 2][m_size / 2];
+            cmb_weights_sum += (1 - brightness_weights.Pixel[src_row][src_col].Gr) * dist_matrix[m_size / 2][m_size / 2];
 
             return cmb_weights_sum;
         }
@@ -173,7 +216,7 @@ namespace MangaScaler.Model {
             double[][] dist_matrix = CreateDistanceWeightsMatrix(radius);
 
             //Creating brightness weights array
-            double[] brightness_weights = CreateBrightnessWeights(strength);
+            DRawImage_G brightness_weights = GetBrightnessWeights(source, strength);
 
             //Processing rows in parallel
             Task[] row_tasks = new Task[source.Height];
